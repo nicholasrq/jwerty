@@ -31,6 +31,24 @@
         : Object.prototype.toString.call(v).toLowerCase().indexOf(s) > 7;
     }
 
+	function allPossibleCases(arr) {
+		if (arr.length === 0) {
+			return [];
+		} else if (arr.length === 1) {
+			return arr[0];
+		} else {
+			var result = [];
+			var allCasesOfRest = allPossibleCases(arr.slice(1)); // recur with the rest of array
+			for (var c in allCasesOfRest) {
+				if(!allCasesOfRest.hasOwnProperty(c)) continue;
+				for (var i = 0; i < arr[0].length; i++) {
+					result.push(arr[0][i].toString() + "+" + allCasesOfRest[c].toString());
+				}
+			}
+			return result;
+		}
+	}
+
     if ($ === $d) {
         $$ = function (selector, context) {
             return selector ? $.querySelector(selector, context || $) : $;
@@ -236,12 +254,29 @@
         // In-case we get called with an instance of ourselves, just return that.
         if (jwertyCode instanceof JwertyCode) return jwertyCode;
 
+	    // If there is multiple combinations, parse it as different combos
+	    var match_key_first = /(([a-z\+]+)(\[([^\/]+)\]|([a-z]+))+)|(\[([^\/]+)\]\+([a-z]+))/g, codes;
+	    if (!realTypeOf(jwertyCode, 'array') && (codes = jwertyCode.match(match_key_first))) {
+		    var matched = [], keys;
+		    for(i = 0; i < codes.length; i++){
+			    keys = codes[i].split("+");
+			    for(var j = 0; j < keys.length; j++){
+					keys[j] = keys[j].replace(/[\[\]]/g, '').split(",");
+			    }
+
+			    matched = matched.concat(allPossibleCases(keys));
+		    }
+
+		    jwertyCode = [matched.join("/")];
+	    }
+
         // If jwertyCode isn't an array, cast it as a string and split into array.
         if (!realTypeOf(jwertyCode, 'array')) {
             jwertyCode = (String(jwertyCode)).replace(/\s/g, '').toLowerCase()
                 .match(/(?:\+,|[^,])+/g);
         }
 
+	    console.log(jwertyCode);
         // Loop through each key sequence in jwertyCode
         for (i = 0, c = jwertyCode.length; i < c; ++i) {
 
@@ -432,10 +467,16 @@
             // Loop through each fragment of jwertyCode
             while (n--) {
                 returnValue = jwertyCode[n].jwertyCombo;
+	            if(returnValue == String.fromCharCode(event.keyCode).toLowerCase()) return returnValue;
+
                 // For each property in the jwertyCode object, compare to `event`
                 for (var p in jwertyCode[n]) {
                     // ...except for jwertyCode.jwertyCombo...
-                    if (p !== 'jwertyCombo' && event[p] != jwertyCode[n][p]) returnValue = false;
+	                if(!jwertyCode[n].hasOwnProperty(p)) continue;
+	                var not_a_combo     = (p !== 'jwertyCombo'),
+		                not_an_event    = (event[p] != jwertyCode[n][p]);
+
+                    if (not_a_combo && not_an_event) returnValue = false;
                 }
                 // If this jwertyCode optional wasn't falsey, then we can return early.
                 if (returnValue !== false) return returnValue;
