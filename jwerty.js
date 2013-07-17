@@ -255,6 +255,7 @@
         if (jwertyCode instanceof JwertyCode) return jwertyCode;
 
 	    // If there is multiple combinations, parse it as different combos
+	    // I just match them by regexp
 	    var matchKeyFirst = /(([^\/\[\]\,]+)(\[([^\/]+)\]|([a-z]+))+)|(\[([^\/]+)\]\+([a-z]+))/g, codes;
 
 	    if (!realTypeOf(jwertyCode, 'array') && (codes = jwertyCode.match(matchKeyFirst))) {
@@ -262,12 +263,18 @@
 		    for(i = 0; i < codes.length; i++){
 			    keys = codes[i].split("+");
 
+			    // This loop will cleanup strings and combine keys into array
+			    // if the key is in-string-array like "cmd+[a,b,c]"
+			    // The output will be the following: [["cmd"], ["a", "b", "c"]]
 			    for(var j = 0; j < keys.length; j++){
 				    if( (key = keys[j]).match(/\[([^\/\-]+)\]/g) ){
 						keys[j] = keys[j].replace(/[\[\]]/g, '').split(",");
 				    }else{ keys[j] = [keys[j]] }
 			    }
 
+			    // allPossibleCases will find all combinations
+			    // for keys. Array looks like so: [["cmd"], ["a", "b", "c"], ["d, e"]]
+			    // and the output will be like this: ["cmd+a+d", "cmd+b+d", "cmd+c+d", "cmd+a+e", "cmd+b+e", "cmd+c+e"] 
 			    matched = matched.concat(allPossibleCases(keys));
 		    }
 
