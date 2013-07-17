@@ -482,11 +482,8 @@
                 // For each property in the jwertyCode object, compare to `event`
                 for (var p in jwertyCode[n]) {
                     // ...except for jwertyCode.jwertyCombo...
-	                if(!jwertyCode[n].hasOwnProperty(p)) continue;
-	                var not_a_combo     = (p !== 'jwertyCombo'),
-		                not_an_event    = (event[p] != jwertyCode[n][p]);
-
-                    if (not_a_combo && not_an_event) returnValue = false;
+	                if(!jwertyCode[n].hasOwnProperty(p)) continue;		// protect from modified prototype
+                    if (p !== 'jwertyCombo' && event[p] != jwertyCode[n][p]) returnValue = false;
                 }
                 // If this jwertyCode optional wasn't falsey, then we can return early.
                 if (returnValue !== false) return returnValue;
