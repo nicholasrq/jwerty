@@ -255,7 +255,7 @@
         if (jwertyCode instanceof JwertyCode) return jwertyCode;
 
 	    // If there is multiple combinations, parse it as different combos
-	    var matchKeyFirst = /(([a-z\+]+)(\[([^\/]+)\]|([a-z]+))+)|(\[([^\/]+)\]\+([a-z]+))/g, codes;
+	    var matchKeyFirst = /(([^\/\[\]\,]+)(\[([^\/]+)\]|([a-z]+))+)|(\[([^\/]+)\]\+([a-z]+))/g, codes;
 
 	    if (!realTypeOf(jwertyCode, 'array') && (codes = jwertyCode.match(matchKeyFirst))) {
 		    var matched = [], keys, key;
