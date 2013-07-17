@@ -262,7 +262,6 @@
 		    var matched = [], keys, key;
 		    for(i = 0; i < codes.length; i++){
 			    keys = codes[i].split("+");
-			    console.log(keys);
 
 			    // This loop will cleanup strings and combine keys into array
 			    // if the key is in-string-array like "cmd+[a,b,c]"
