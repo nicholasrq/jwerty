@@ -255,19 +255,23 @@
         if (jwertyCode instanceof JwertyCode) return jwertyCode;
 
 	    // If there is multiple combinations, parse it as different combos
-	    var match_key_first = /(([a-z\+]+)(\[([^\/]+)\]|([a-z]+))+)|(\[([^\/]+)\]\+([a-z]+))/g, codes;
-	    if (!realTypeOf(jwertyCode, 'array') && (codes = jwertyCode.match(match_key_first))) {
-		    var matched = [], keys;
+	    var matchKeyFirst = /(([a-z\+]+)(\[([^\/]+)\]|([a-z]+))+)|(\[([^\/]+)\]\+([a-z]+))/g, codes;
+
+	    if (!realTypeOf(jwertyCode, 'array') && (codes = jwertyCode.match(matchKeyFirst))) {
+		    var matched = [], keys, key;
 		    for(i = 0; i < codes.length; i++){
 			    keys = codes[i].split("+");
+
 			    for(var j = 0; j < keys.length; j++){
-					keys[j] = keys[j].replace(/[\[\]]/g, '').split(",");
+				    if( (key = keys[j]).match(/\[([^\/\-]+)\]/g) ){
+						keys[j] = keys[j].replace(/[\[\]]/g, '').split(",");
+				    }else{ keys[j] = [keys[j]] }
 			    }
 
 			    matched = matched.concat(allPossibleCases(keys));
 		    }
 
-		    jwertyCode = [matched.join("/")];
+		    jwertyCode = matched.join("/");
 	    }
 
         // If jwertyCode isn't an array, cast it as a string and split into array.
@@ -276,7 +280,6 @@
                 .match(/(?:\+,|[^,])+/g);
         }
 
-	    console.log(jwertyCode);
         // Loop through each key sequence in jwertyCode
         for (i = 0, c = jwertyCode.length; i < c; ++i) {
 
