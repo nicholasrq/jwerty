@@ -187,6 +187,7 @@
             // Comma, or ,
             ',': 188,
             comma: 188,
+            dash:189
             //'-': 189, //???
             // Period, or ., or full-stop
             '.': 190,
